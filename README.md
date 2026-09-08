@@ -1,9 +1,9 @@
 # Stella
 
-UMC PRODUCT 서버의 OpenAPI 스펙과 클라이언트 코드베이스의 Moya Router 연결 상태를 추적하는 SwiftPM 도구입니다. "어떤 API가 아직 앱에 안 붙었는지", "각 엔드포인트의 담당자가 누구인지"를 스냅샷(`coverage.json`)과 HTML 리포트로 보여줍니다.
+UMC PRODUCT 서버의 OpenAPI 스펙과 클라이언트 코드베이스의 Moya Router 연결 상태를 추적하는 SwiftPM 도구입니다. "어떤 API 가 아직 앱에 안 붙었는지", "각 엔드포인트의 담당자가 누구인지"를 스냅샷(`coverage.json`)과 HTML 리포트로 보여줍니다.
 
 - 작성자: 제옹(euijjang97)
-- 상세 문서: [Wiki](https://github.com/UMC-PRODUCT/umc-product-stella/wiki)
+- 상세 문서: [Wiki][wiki]
 
 ## 왜 별도 레포인가
 
@@ -13,8 +13,12 @@ UMC PRODUCT 서버의 OpenAPI 스펙과 클라이언트 코드베이스의 Moya 
 
 | 레포 | 상태 | 비고 |
 |------|------|------|
-| `UMC-PRODUCT/umc-product-iOS` | 지원 | `--app-product`(레거시 `AppProduct/`) · `--umc-app`(Tuist `UMCApp/`) 두 프로젝트 스캔 |
-| `UMC-PRODUCT/umc-product-macOS` | **미지원** | `apicov scan` 의 프로젝트 플래그가 iOS 두 프로젝트로 고정돼 있어(`Sources/apicov/Commands/ScanCommand.swift:24-27`) 플래그 일반화가 선행돼야 합니다. 코어의 `ProjectInput`(`Sources/StellaCore/Pipeline/ScanConfig.swift:3`) 자체는 `key`/`displayName`/`rootPath`/`routerGlobs` 를 받는 범용 구조입니다 |
+| `UMC-PRODUCT/umc-product-iOS` | 지원 | 두 프로젝트를 한 번에 스캔 |
+| `UMC-PRODUCT/umc-product-macOS` | **미지원** | 프로젝트 플래그 일반화가 선행돼야 함 |
+
+iOS 는 `--app-product`(레거시 `AppProduct/`)와 `--umc-app`(Tuist `UMCApp/`) 두 플래그로 프로젝트를 하나씩 지정합니다.
+
+macOS 가 아직 미지원인 이유는 이 플래그 때문입니다. `apicov scan` 의 프로젝트 플래그가 `--app-product`·`--umc-app` 이라는 iOS 두 프로젝트로 고정돼 있습니다(`Sources/apicov/Commands/ScanCommand.swift`). 세 번째 소비자를 붙이려면 플래그부터 일반화해야 합니다. 반면 코어의 `ProjectInput`(`Sources/StellaCore/Pipeline/ScanConfig.swift`) 자체는 `key`/`displayName`/`rootPath`/`routerGlobs` 를 받는 범용 구조라 플래그만 열어주면 그대로 재사용할 수 있습니다.
 
 ## 빠른 시작
 
@@ -49,7 +53,7 @@ swift run stella          # 담당자 매핑 편집용 macOS GUI
 | 이름 | 종류 | 역할 |
 |------|------|------|
 | `StellaCore` | 라이브러리 | OpenAPI 파싱 · Router 스캔 · 매칭 · blame · 스냅샷 |
-| `StellaTestSupport` | 라이브러리 | 테스트 헬퍼 (샌드박스 git 레포, URL 스텁) |
+| `StellaTestSupport` | 라이브러리 | 테스트 헬퍼 — 샌드박스 git 레포, URL 스텁 |
 | `apicov` | 실행 파일 | CLI — `scan` · `report` · `diff` |
 | `stella` | 실행 파일 | macOS GUI |
 
@@ -76,9 +80,11 @@ scripts/build-app.sh                       `.app` 번들 패키징
 
 | 파일 | 역할 |
 |------|------|
-| `overrides.yml` | 자동 매칭 실패 Router case 보정 — OpenAPI 키로 강제 매핑하거나 외부 API 를 `ignore` |
+| `overrides.yml` | 자동 매칭에 실패한 Router case 보정 |
 | `authors.yml` | git blame 이메일 → 표시명·GitHub username |
-| `owners.yml` | 엔드포인트별/태그별 담당자 (이메일은 `authors.yml` 로 표시명 해석) |
+| `owners.yml` | 엔드포인트별·태그별 담당자 |
+
+`overrides.yml` 에서는 Router case 를 OpenAPI 키에 강제로 매핑하거나 스펙에 없는 외부 API 를 `ignore` 로 빼둘 수 있습니다. `owners.yml` 에 적은 이메일은 `authors.yml` 을 거쳐 표시명으로 풀립니다.
 
 ## 개발
 
@@ -88,17 +94,28 @@ swift test --filter PathNormalizerTests       # 하나만
 scripts/build-app.sh                          # dist/Stella.app 패키징
 ```
 
-`.app` 번들은 ad-hoc 서명이라 로컬 실행용입니다. 자세한 내용은 [개발 가이드](https://github.com/UMC-PRODUCT/umc-product-stella/wiki/Development)와 [CONTRIBUTING.md](CONTRIBUTING.md) 에 있습니다.
+`.app` 번들은 ad-hoc 서명이라 로컬 실행용입니다. 자세한 내용은 [개발 가이드][development]와 [CONTRIBUTING.md](CONTRIBUTING.md) 에 있습니다.
 
 ## 더 보기
 
 | 문서 | 내용 |
 |------|------|
-| [설치와 첫 스캔](https://github.com/UMC-PRODUCT/umc-product-stella/wiki/Getting-Started) | 빌드부터 첫 `coverage.json` 까지, 경로 해석 규칙 |
-| [CLI 레퍼런스](https://github.com/UMC-PRODUCT/umc-product-stella/wiki/CLI-Reference) | `scan` · `report` · `diff` 플래그 전체 |
-| [Stella 앱](https://github.com/UMC-PRODUCT/umc-product-stella/wiki/Stella-App) | GUI 화면 구성, 단축키, YAML 동기화 |
-| [매핑 YAML](https://github.com/UMC-PRODUCT/umc-product-stella/wiki/Mapping-YAML) | 세 파일의 스키마와 예시 |
-| [매칭 파이프라인](https://github.com/UMC-PRODUCT/umc-product-stella/wiki/Matching-Pipeline) | 스캔이 실제로 하는 일 |
-| [스냅샷 스키마](https://github.com/UMC-PRODUCT/umc-product-stella/wiki/Snapshot-Schema) | `coverage.json` 필드 정의 |
-| [소비자 레포 연동](https://github.com/UMC-PRODUCT/umc-product-stella/wiki/Consumer-Integration) | CI 워크플로, 새 레포 붙이기 |
-| [트러블슈팅](https://github.com/UMC-PRODUCT/umc-product-stella/wiki/Troubleshooting) | 증상별 원인과 조치 |
+| [설치와 첫 스캔][getting-started] | 빌드부터 첫 `coverage.json` 까지, 경로 해석 규칙 |
+| [CLI 레퍼런스][cli-reference] | `scan` · `report` · `diff` 플래그 전체 |
+| [Stella 앱][stella-app] | GUI 화면 구성, 단축키, YAML 동기화 |
+| [매핑 YAML][mapping-yaml] | 세 파일의 스키마와 예시 |
+| [매칭 파이프라인][matching-pipeline] | 스캔이 실제로 하는 일 |
+| [스냅샷 스키마][snapshot-schema] | `coverage.json` 필드 정의 |
+| [소비자 레포 연동][consumer-integration] | CI 워크플로, 새 레포 붙이기 |
+| [트러블슈팅][troubleshooting] | 증상별 원인과 조치 |
+
+[wiki]: https://github.com/UMC-PRODUCT/umc-product-stella/wiki
+[development]: https://github.com/UMC-PRODUCT/umc-product-stella/wiki/Development
+[getting-started]: https://github.com/UMC-PRODUCT/umc-product-stella/wiki/Getting-Started
+[cli-reference]: https://github.com/UMC-PRODUCT/umc-product-stella/wiki/CLI-Reference
+[stella-app]: https://github.com/UMC-PRODUCT/umc-product-stella/wiki/Stella-App
+[mapping-yaml]: https://github.com/UMC-PRODUCT/umc-product-stella/wiki/Mapping-YAML
+[matching-pipeline]: https://github.com/UMC-PRODUCT/umc-product-stella/wiki/Matching-Pipeline
+[snapshot-schema]: https://github.com/UMC-PRODUCT/umc-product-stella/wiki/Snapshot-Schema
+[consumer-integration]: https://github.com/UMC-PRODUCT/umc-product-stella/wiki/Consumer-Integration
+[troubleshooting]: https://github.com/UMC-PRODUCT/umc-product-stella/wiki/Troubleshooting
