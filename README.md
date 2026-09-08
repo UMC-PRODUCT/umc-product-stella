@@ -25,8 +25,16 @@
 
 | 레포 | 상태 | 비고 |
 |------|------|------|
-| `UMC-PRODUCT/umc-product-iOS` | 지원 | `--app-product`(레거시 `AppProduct/`) · `--umc-app`(Tuist `UMCApp/`) 두 프로젝트 스캔 |
-| `UMC-PRODUCT/umc-product-macOS` | **미지원** | `apicov scan` 의 프로젝트 플래그가 iOS 두 프로젝트로 고정돼 있어(`Sources/apicov/Commands/ScanCommand.swift:24-27`) 플래그를 먼저 일반화해야 합니다. 코어의 `ProjectInput`(`Sources/StellaCore/Pipeline/ScanConfig.swift:3`) 자체는 `key`/`displayName`/`rootPath`/`routerGlobs` 를 받는 범용 구조입니다 |
+| `UMC-PRODUCT/umc-product-iOS` | 지원 | 프로젝트 2종 스캔 |
+| `UMC-PRODUCT/umc-product-macOS` | 미지원 | 플래그 일반화 선행 |
+
+iOS 레포는 `--app-product`(레거시 `AppProduct/`) 와 `--umc-app`(Tuist `UMCApp/`) 두 프로젝트를 함께 스캔합니다.
+
+macOS 레포를 아직 지원하지 않는 것은 코어가 아니라 CLI 쪽 제약 때문입니다.
+코어의 `ProjectInput`(`Sources/StellaCore/Pipeline/ScanConfig.swift:3`) 은
+`key`·`displayName`·`rootPath`·`routerGlobs` 를 받는 범용 구조라 프로젝트 종류를 가리지 않습니다.
+반면 `apicov scan` 의 프로젝트 플래그는 iOS 두 프로젝트로 고정돼 있어서
+(`Sources/apicov/Commands/ScanCommand.swift:24-27`) macOS 를 붙이려면 이 플래그를 먼저 일반화해야 합니다.
 
 ## 실행법
 
