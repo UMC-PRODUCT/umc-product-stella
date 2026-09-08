@@ -130,7 +130,7 @@ swift run stella
 | 이름 | 종류 | 역할 |
 |------|------|------|
 | `StellaCore` | 라이브러리 | OpenAPI 파싱 · Router 스캔 · 매칭 · blame · 스냅샷 |
-| `StellaTestSupport` | 라이브러리 | 테스트 헬퍼 (샌드박스 git 레포, URL 스텁) |
+| `StellaTestSupport` | 라이브러리 | 테스트 헬퍼 — 샌드박스 git 레포, URL 스텁 |
 | `apicov` | 실행 파일 | CLI — `scan` · `report` · `diff` |
 | `stella` | 실행 파일 | macOS GUI |
 
@@ -159,7 +159,7 @@ swift test --filter PathNormalizerTests       # 하나만
 scripts/build-app.sh                          # dist/Stella.app 패키징
 ```
 
-`.app` 번들은 ad-hoc 서명이라 로컬 실행용입니다. 자세한 내용은 [개발 가이드](https://github.com/UMC-PRODUCT/umc-product-stella/wiki/Development)와 [CONTRIBUTING.md](CONTRIBUTING.md) 에 있습니다.
+`.app` 번들은 ad-hoc 서명이라 로컬 실행용입니다. 자세한 내용은 [개발 가이드][development]와 [CONTRIBUTING.md](CONTRIBUTING.md) 에 있습니다.
 
 ## 더 보기
 
